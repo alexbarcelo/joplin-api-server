@@ -34,7 +34,7 @@ The following environment variables can be used and that will set up how the con
 - `JOPLIN_SYNC_PATH` to configure the **path** (used by multiple targets). Make sure to check in the [Synchronisation](https://joplinapp.org/help/apps/terminal#synchronisation) documentation whether you need the `url` or the `path` configuration for your target (or maybe both in the case of `s3`).
 - `JOPLIN_SYNC_USERNAME` username for synchronizing.
 - `JOPLIN_SYNC_PASSWORD` password for synchronizing.
-- `JOPLIN_API_TOKEN` strong secret token for connecting to the API. If omitted, Joplin will automatically populate it with a random token.
+- `JOPLIN_API_TOKEN` secret token for connecting to the API. If omitted, Joplin will automatically populate it with a random token.
 
 ## Profile, volume and Joplin settings
 
@@ -49,7 +49,7 @@ Let's say that you have a web application that needs access to the Joplin Data A
 ```yaml
 services:
   joplin-api-server:
-    image: ghcr.io/joplin-api-server:latest
+    image: ghcr.io/alexbarcelo/joplin-api-server:latest
     env:
       - JOPLIN_API_TOKEN
       ## Set up the appropriate synchronization target variables
@@ -72,4 +72,4 @@ volumes:
   joplin-data:
 ```
 
-It is an untested incomplete example, but it should illustrate the basic idea behing this image.
+It is an untested incomplete example, but it should illustrate the basic idea behing this image. By using this architecture, the REST API for Joplin is completely internal (running across the compose-created internal network) and the port is not published. Which, in terms of attack surface, is a positive outcome. If you need to publish the port (because your needs, because you are in the developing stage, whatever your reasons) you can of course publish the 41184 port from the `joplin-api-server` container.
