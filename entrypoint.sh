@@ -38,23 +38,23 @@ esac
 
 $JOPLIN_CMD config sync.target $JOPLIN_SYNC_TARGET
 
-if [ -z "JOPLIN_SYNC_URL" ]; then
+if [ ! -z "$JOPLIN_SYNC_URL" ]; then
     $JOPLIN_CMD config sync.$JOPLIN_SYNC_TARGET.url $JOPLIN_SYNC_URL
 fi
 
-if [ -z "JOPLIN_SYNC_PATH" ]; then
+if [ ! -z "$JOPLIN_SYNC_PATH" ]; then
     $JOPLIN_CMD config sync.$JOPLIN_SYNC_TARGET.path $JOPLIN_SYNC_PATH
 fi
 
-if [ -z "JOPLIN_SYNC_USERNAME" ]; then
+if [ ! -z "$JOPLIN_SYNC_USERNAME" ]; then
     $JOPLIN_CMD config sync.$JOPLIN_SYNC_TARGET.username $JOPLIN_SYNC_USERNAME
 fi
 
-if [ -z "JOPLIN_SYNC_PASSWORD" ]; then
+if [ ! -z "$JOPLIN_SYNC_PASSWORD" ]; then
     $JOPLIN_CMD config sync.$JOPLIN_SYNC_TARGET.password $JOPLIN_SYNC_PASSWORD
 fi
 
-if [ -z "JOPLIN_API_TOKEN" ]; then
+if [ ! -z "$JOPLIN_API_TOKEN" ]; then
     $JOPLIN_CMD config api.token $JOPLIN_API_TOKEN
 fi
 
