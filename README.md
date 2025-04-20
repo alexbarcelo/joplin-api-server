@@ -74,3 +74,94 @@ volumes:
 ```
 
 It is an untested incomplete example, but it should illustrate the basic idea behing this image. By using this architecture, the REST API for Joplin is completely internal (running across the compose-created internal network) and the port is not published. Which, in terms of attack surface, is a positive outcome. If you need to publish the port (because your needs, because you are in the developing stage, whatever your reasons) you can of course publish the 41184 port from the `joplin-api-server` container.
+
+## Force sync
+
+The `CMD` is, by default, `server start`. But one can use `sync` to force a synchronization. This is not easily achievable through docker compose, and may be done manually as follows:
+
+```bash
+$ docker run -e ... -v $PWD/profile:/joplin-profile ghcr.io/alexbarcelo/joplin-api-server sync
+```
+
+After running this, a regular (i.e., `server start` by default) will start with the profile prepopulated and ready. You should make sure that the environment and the profile volume are properly set up and consistent between the `docker run` command above and the compose.
+
+With this idea, an `initContainer` can be used in a Kubernetes environment. Below you can find an example of a `Deployment` that uses this:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jta-deployment
+  labels:
+    app: jta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jta
+  template:
+    metadata:
+      labels:
+        app: jta
+    spec:
+      initContainers:
+        - name: init-joplin-sync
+          image: ghcr.io/alexbarcelo/joplin-api-server:main
+          imagePullPolicy: Always
+          args: ["sync"]
+          volumeMounts:
+            - name: joplin-profile
+              mountPath: /joplin-profile
+          env:
+            - name: JOPLIN_SYNC_TARGET
+              value: joplin_server
+            - name: JOPLIN_SYNC_PATH
+              value: "https://joplin.example.net"
+            - name: JOPLIN_SYNC_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: joplin-secret
+                  key: JOPLIN_SYNC_USERNAME
+            - name: JOPLIN_SYNC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: joplin-secret
+                  key: JOPLIN_SYNC_PASSWORD
+            - name: JOPLIN_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: joplin-secret
+                  key: JOPLIN_API_TOKEN
+      containers:
+        - name: joplin-api-server
+          image: ghcr.io/alexbarcelo/joplin-api-server:main
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 41184
+          volumeMounts:
+            - name: joplin-profile
+              mountPath: /joplin-profile
+          env:
+            - name: JOPLIN_SYNC_TARGET
+              value: joplin_server
+            - name: JOPLIN_SYNC_PATH
+              value: "https://joplin.example.net"
+            - name: JOPLIN_SYNC_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: joplin-secret
+                  key: JOPLIN_SYNC_USERNAME
+            - name: JOPLIN_SYNC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: joplin-secret
+                  key: JOPLIN_SYNC_PASSWORD
+            - name: JOPLIN_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: joplin-secret
+                  key: JOPLIN_API_TOKEN
+      volumes:
+        - name: joplin-profile
+          emptyDir: {}
+```
