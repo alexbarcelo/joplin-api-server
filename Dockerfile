@@ -7,5 +7,5 @@ COPY entrypoint.sh /entrypoint.sh
 EXPOSE 41184
 VOLUME ["/joplin-profile"]
 
-ENTRYPOINT [ "/bin/sh", "-c" ]
-CMD ["/entrypoint.sh"]
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "server", "start" ]

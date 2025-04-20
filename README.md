@@ -35,6 +35,7 @@ The following environment variables can be used and that will set up how the con
 - `JOPLIN_SYNC_USERNAME` username for synchronizing.
 - `JOPLIN_SYNC_PASSWORD` password for synchronizing.
 - `JOPLIN_API_TOKEN` secret token for connecting to the API. If omitted, Joplin will automatically populate it with a random token.
+- `JOPLIN_SYNC_INTERVAL` the synchronization interval. Use a [valid value](https://joplinapp.org/help/apps/terminal#commands), default is 300 (synchronization every 5 minutes).
 
 ## Profile, volume and Joplin settings
 

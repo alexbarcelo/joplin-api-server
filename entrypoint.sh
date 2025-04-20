@@ -58,4 +58,14 @@ if [ ! -z "$JOPLIN_API_TOKEN" ]; then
     $JOPLIN_CMD config api.token $JOPLIN_API_TOKEN
 fi
 
-exec $JOPLIN_CMD server start
+if [ ! -z $JOPLIN_SYNC_INTERVAL ]; then
+    $JOPLIN_CMD config sync.interval $JOPLIN_SYNC_INTERVAL
+fi
+
+echo $#
+
+if [ $# -gt 0 ]; then
+    exec $JOPLIN_CMD "$@"
+else
+    exec $JOPLIN_CMD server start
+fi
